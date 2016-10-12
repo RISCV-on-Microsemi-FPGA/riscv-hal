@@ -1,7 +1,7 @@
 /*******************************************************************************
  * (c) Copyright 2016 Microsemi SoC Products Group. All rights reserved.
  * 
- * Hardware Abtraction Layer for RISC-V. This is mainly targeted at RV32IM but
+ * Hardware Abstraction Layer for RISC-V. This is mainly targeted at RV32IM but
  * should be usable with other variants.
  * 
  */
