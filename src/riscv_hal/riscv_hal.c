@@ -27,6 +27,42 @@
 /*------------------------------------------------------------------------------
  * 
  */
+void Invalid_IRQHandler(void);
+void External_1_IRQHandler(void);
+void External_2_IRQHandler(void);
+void External_3_IRQHandler(void);
+void External_4_IRQHandler(void);
+void External_5_IRQHandler(void);
+void External_6_IRQHandler(void);
+void External_7_IRQHandler(void);
+void External_8_IRQHandler(void);
+void External_9_IRQHandler(void);
+void External_10_IRQHandler(void);
+void External_11_IRQHandler(void);
+void External_12_IRQHandler(void);
+void External_13_IRQHandler(void);
+void External_14_IRQHandler(void);
+void External_15_IRQHandler(void);
+void External_16_IRQHandler(void);
+void External_17_IRQHandler(void);
+void External_18_IRQHandler(void);
+void External_19_IRQHandler(void);
+void External_20_IRQHandler(void);
+void External_21_IRQHandler(void);
+void External_22_IRQHandler(void);
+void External_23_IRQHandler(void);
+void External_24_IRQHandler(void);
+void External_25_IRQHandler(void);
+void External_26_IRQHandler(void);
+void External_27_IRQHandler(void);
+void External_28_IRQHandler(void);
+void External_29_IRQHandler(void);
+void External_30_IRQHandler(void);
+void External_31_IRQHandler(void);
+
+/*------------------------------------------------------------------------------
+ * 
+ */
 extern void handle_m_ext_interrupt();
 extern void handle_m_timer_interrupt();
 
@@ -86,6 +122,55 @@ void handle_m_timer_interrupt(){
     PRCI->MTIMECMP[mhartid] = PRCI->MTIME + g_systick_increment;
     SysTick_Handler();
     set_csr(mie, MIP_MTIP);
+}
+
+/*------------------------------------------------------------------------------
+ * RISC-V interrupt handler for external interrupts.
+ */
+void (*ext_irq_handler_table[32])(void) =
+{
+    Invalid_IRQHandler,
+    External_1_IRQHandler,
+    External_2_IRQHandler,
+    External_3_IRQHandler,
+    External_4_IRQHandler,
+    External_5_IRQHandler,
+    External_6_IRQHandler,
+    External_7_IRQHandler,
+    External_8_IRQHandler,
+    External_9_IRQHandler,
+    External_10_IRQHandler,
+    External_11_IRQHandler,
+    External_12_IRQHandler,
+    External_13_IRQHandler,
+    External_14_IRQHandler,
+    External_15_IRQHandler,
+    External_16_IRQHandler,
+    External_17_IRQHandler,
+    External_18_IRQHandler,
+    External_19_IRQHandler,
+    External_20_IRQHandler,
+    External_21_IRQHandler,
+    External_22_IRQHandler,
+    External_23_IRQHandler,
+    External_24_IRQHandler,
+    External_25_IRQHandler,
+    External_26_IRQHandler,
+    External_27_IRQHandler,
+    External_28_IRQHandler,
+    External_29_IRQHandler,
+    External_30_IRQHandler,
+    External_31_IRQHandler
+};
+
+
+/*------------------------------------------------------------------------------
+ * 
+ */
+void handle_m_ext_interrupt(){
+    uint32_t int_num  = PLIC_ClaimIRQ();
+    ext_irq_handler_table[int_num]();
+    PLIC_CompleteIRQ(int_num);
 }
 
 /*------------------------------------------------------------------------------
