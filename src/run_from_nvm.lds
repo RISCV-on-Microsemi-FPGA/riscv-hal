@@ -1,6 +1,9 @@
 OUTPUT_ARCH( "riscv" )
 ENTRY(_start)
 
+STACK_SIZE = 128k;
+HEAP_SIZE = 128k;
+
 MEMORY
 {
   nvm (rx)   : ORIGIN = 0x60000000, LENGTH = 256k
@@ -37,17 +40,35 @@ SECTIONS
 
   /* bss segment */
   .sbss : {
+    __sbss_start = .;
     *(.sbss .sbss.* .gnu.linkonce.sb.*)
     *(.scommon)
+    __sbss_end = .;
   } >ram
   
   .bss :
   { 
+    __bss_start = .;
     *(.bss)
+    __bss_end = .;
   } >ram
 
   /* End of uninitalized data segement */
   _end = .;
-  _heap_end = .;
+  
+  .heap : ALIGN(0x10)
+  {
+    __heap_start = .;
+    . += HEAP_SIZE;
+    __heap_end = .;
+    _heap_end = __heap_end;
+  } >ram
+  
+  .stack : ALIGN(0x10)
+  {
+    __stack_bottom = .;
+    . += STACK_SIZE;
+    __stack_top = .;
+  } >ram
 }
 

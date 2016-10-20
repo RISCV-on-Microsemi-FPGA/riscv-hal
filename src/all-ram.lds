@@ -1,6 +1,9 @@
 OUTPUT_ARCH( "riscv" )
 ENTRY(_start)
 
+STACK_SIZE = 128k;
+HEAP_SIZE = 128k;
+
 SECTIONS
 {
   . = 0x80000000;
@@ -10,16 +13,9 @@ SECTIONS
     *(.text)
   }
 
-  /* data segment */
-  .data :
-  { 
-    __data_load = LOADADDR(.data);
-    __data_start = .; 
-    *(.data)
-    __data_end = .;
-  }
-
-  .sdata : {
+  /* short/global data section */
+  .sdata : ALIGN(0x10)
+  {
     __sdata_load = LOADADDR(.sdata);
     __sdata_start = .; 
     _gp = . + 0x800;
@@ -29,15 +25,48 @@ SECTIONS
     __sdata_end = .;
   }
 
-  /* bss segment */
-  .sbss : {
+  /* data section */
+  .data : ALIGN(0x10)
+  { 
+    __data_load = LOADADDR(.data);
+    __data_start = .; 
+    *(.data)
+    __data_end = .;
+  }
+
+  /* sbss section */
+  .sbss : ALIGN(0x10)
+  {
+    __sbss_start = .;
     *(.sbss .sbss.* .gnu.linkonce.sb.*)
     *(.scommon)
+    __sbss_end = .;
   }
-  .bss : { *(.bss) }
+  
+  /* sbss section */
+  .bss : ALIGN(0x10)
+  { 
+    __bss_start = .;
+    *(.bss)
+    __bss_end = .;
+  }
 
   /* End of uninitalized data segement */
   _end = .;
-  _heap_end = .;
+  
+  .heap : ALIGN(0x10)
+  {
+    __heap_start = .;
+    . += HEAP_SIZE;
+    __heap_end = .;
+    _heap_end = __heap_end;
+  }
+  
+  .stack : ALIGN(0x10)
+  {
+    __stack_bottom = .;
+    . += STACK_SIZE;
+    __stack_top = .;
+  }
 }
 

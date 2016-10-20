@@ -38,7 +38,7 @@ handle_reset:
   la gp, _gp
 
   # initialize stack pointer
-  la sp, stack_top
+  la sp, __stack_top
 
   # perform the rest of initialization in C
   j _init
@@ -124,10 +124,4 @@ trap_entry:
   addi sp, sp, 32*REGBYTES
   mret
 
-  // Fill the stack with data so we can see if it was overrun.
-  .bss
-  .align 4
-stack_bottom:
-  .fill STACK_SIZE/4, 4, 0x00000000
-stack_top:
 #endif
