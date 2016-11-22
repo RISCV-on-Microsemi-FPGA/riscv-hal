@@ -174,7 +174,7 @@ int wait(int* status)
 ssize_t write(int fd, const void* ptr, size_t len)
 {
 
-  const uint8_t * current = (const char*) ptr;
+  const uint8_t * current = (const uint8_t *) ptr;
   size_t jj;
   if (isatty(fd)) {
     
@@ -182,7 +182,7 @@ ssize_t write(int fd, const void* ptr, size_t len)
       
       UART_send(&g_uart, current + jj, 1);
       if (current[jj] == '\n'){
-        UART_send(&g_uart, "\r", 1);
+        UART_send(&g_uart, (const uint8_t *)"\r", 1);
       }
     }
     return len;
