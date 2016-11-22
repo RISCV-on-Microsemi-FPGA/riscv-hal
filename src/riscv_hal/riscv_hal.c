@@ -81,7 +81,6 @@ static uint64_t g_systick_increment = 0;
  * Disable all interrupts.
  */
 void __disable_irq(void) {
-    clear_csr(mie, MIP_MEIP);
     clear_csr(mstatus, MSTATUS_MIE);
 }
 
@@ -89,7 +88,6 @@ void __disable_irq(void) {
  * Enabler all interrupts.
  */
 void __enable_irq(void) {
-    set_csr(mie, MIP_MEIP);
     set_csr(mstatus, MSTATUS_MIE);
 }
 

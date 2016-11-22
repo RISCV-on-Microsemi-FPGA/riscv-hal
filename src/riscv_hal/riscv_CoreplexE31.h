@@ -125,6 +125,9 @@ static inline void PLIC_init(void)
 
 	/* Set the threshold to zero. */
 	PLIC->TARGET[hart_id].PRIORITY_THRESHOLD = 0;
+
+	/* Enable machine external interrupts. */
+	set_csr(mie, MIP_MEIP);
 }
 
 static inline void PLIC_EnableIRQ(IRQn_Type IRQn)
