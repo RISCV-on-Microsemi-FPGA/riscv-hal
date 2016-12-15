@@ -101,8 +101,8 @@ uint32_t SysTick_Config(uint32_t ticks) {
     g_systick_increment = ticks / RTC_PRESCALER;
 
     if (g_systick_increment > 0) {
-        uint32_t mhartid = read_csr(mhartid);
-        PRCI->MTIMECMP[mhartid] = PRCI->MTIME + g_systick_increment;
+        uint32_t mhart_id = read_csr(mhartid);
+        PRCI->MTIMECMP[mhart_id] = PRCI->MTIME + g_systick_increment;
         set_csr(mie, MIP_MTIP);
         __enable_irq();
         ret_val = SUCCESS;
@@ -115,9 +115,9 @@ uint32_t SysTick_Config(uint32_t ticks) {
  * RISC-V interrupt handler for machine timer interrupts.
  */
 void handle_m_timer_interrupt(){
-    uint32_t mhartid = read_csr(mhartid);
+    uint32_t mhart_id = read_csr(mhartid);
     clear_csr(mie, MIP_MTIP);
-    PRCI->MTIMECMP[mhartid] = PRCI->MTIME + g_systick_increment;
+    PRCI->MTIMECMP[mhart_id] = PRCI->MTIME + g_systick_increment;
     SysTick_Handler();
     set_csr(mie, MIP_MTIP);
 }
