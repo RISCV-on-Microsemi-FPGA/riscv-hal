@@ -1,21 +1,36 @@
+/*****************************************************************************
+    This linker is used to run the RISC-V based application from the SmartFusion2
+    eNVM memory. The RISC-V design is targeted for the SmartFusion2 device.
+
+    Example:
+    The SmartFusion2 Advanced Development Kit includes a SmartFusion2 M2S150 SoC FPGA.
+    The RISC-V design on SmartFusion2 maps on-chip memory(eNVM) at 0x60000000
+    and DDR3 at 0x80000000
+****************************************************************************/
+
 OUTPUT_ARCH( "riscv" )
 ENTRY(_start)
 
 STACK_SIZE = 128k;
 HEAP_SIZE = 128k;
 
+MEMORY
+{
+  nvm (rx)   : ORIGIN = 0x60000000, LENGTH = 256k
+  ram (rwx)  : ORIGIN = 0x80000000, LENGTH = 256m
+}
+
+
 SECTIONS
 {
-  . = 0x80000000;
   .text : 
   {
     ./riscv_hal/entry.o(.text.entry)
+    *(.text.entry)
     *(.text)
-  }
+  } >nvm
 
-  /* short/global data section */
-  .sdata : ALIGN(0x10)
-  {
+  .sdata : {
     __sdata_load = LOADADDR(.sdata);
     __sdata_start = .; 
     _gp = . + 0x800;
@@ -23,33 +38,30 @@ SECTIONS
     *(.srodata*)
     *(.sdata .sdata.* .gnu.linkonce.s.*)
     __sdata_end = .;
-  }
+  } >ram AT>nvm
 
-  /* data section */
   .data : ALIGN(0x10)
-  { 
+  {
     __data_load = LOADADDR(.data);
     __data_start = .; 
     *(.data)
     __data_end = .;
-  }
+  } >ram AT>nvm
 
-  /* sbss section */
-  .sbss : ALIGN(0x10)
-  {
+  /* bss segment */
+  .sbss : {
     __sbss_start = .;
     *(.sbss .sbss.* .gnu.linkonce.sb.*)
     *(.scommon)
     __sbss_end = .;
-  }
+  } >ram
   
-  /* sbss section */
-  .bss : ALIGN(0x10)
+  .bss :
   { 
     __bss_start = .;
     *(.bss)
     __bss_end = .;
-  }
+  } >ram
 
   /* End of uninitalized data segement */
   _end = .;
@@ -60,13 +72,13 @@ SECTIONS
     . += HEAP_SIZE;
     __heap_end = .;
     _heap_end = __heap_end;
-  }
+  } >ram
   
   .stack : ALIGN(0x10)
   {
     __stack_bottom = .;
     . += STACK_SIZE;
     __stack_top = .;
-  }
+  } >ram
 }
 
